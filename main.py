@@ -1,6 +1,8 @@
 import sounddevice as sd
 import soundfile as sf
 from contextlib import redirect_stdout
+import keyboard
+import threading
 
 def write_log():
     with open('output.txt', 'w') as file:
@@ -14,20 +16,35 @@ def write_log():
                 print(f"Default Sample Rate: {device['default_samplerate']} Hz",  file=file, flush=True)
                 print("-" * 40)
 
-# Load the audio file
-data, fs = sf.read('sample.mp3', dtype='float32')
+def play_sound():
+        
+    # Load the audio file
+    data, fs = sf.read('audio/yippie.mp3', dtype='float64')
+    # Suppose you must should choose your own VB Device ID
+    #sd.default.device = 50
+    sd.default.device = 46
+
+
+    print("Playing audio...")
+
+    # Play the audio file
+    sd.play(data, fs)
+
+    print("Finished!")
+
+def play_sound_threaded():
+    threading.Thread(target=play_sound).start()
+
+
+print("Soundboard is started!")
+
+# Test trigger hotkeys
+keyboard.add_hotkey('ctrl+shift+a', play_sound)
+
+keyboard.wait('esc') 
+
+
 
 # Initial your audio device list
 #write_log()
 
-
-# Suppose you must should choose your own VB Device ID
-sd.default.device = 50
-
-print("Playing audio...")
-
-# Play the audio file
-sd.play(data, fs)
-sd.wait()  
-
-print("Finished!")
